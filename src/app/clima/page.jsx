@@ -1,17 +1,31 @@
 'use client'
 import { useState } from 'react';
-import { GetClimaResponse } from '../service/service';
 import Link from 'next/link';
+import axios from 'axios'; // Certifique-se de instalar a dependência axios
 
 export default function Clima() {
   const [location, setLocation] = useState(null);
   const [cityQuery, setCityQuery] = useState('');
-  const apiKey = '5c6de4b36195d7d1b3a2c86353e907f5';
+  const apiKey = '5c6de4b36195d7d1b3a2c86353e907f5'; 
 
   const handleCitySearch = async () => {
     try {
-      const data = await GetClimaResponse(cityQuery);
-      setLocation(data);
+
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityQuery}&appid=${apiKey}&units=metric`
+      );
+
+
+      if (response.status === 200) {
+        const data = response.data;
+        setLocation({
+          name: data.name,
+          temperature: data.main.temp,
+          weather: data.weather[0].description,
+        });
+      } else {
+        console.error('Erro ao buscar localização:', response.statusText);
+      }
     } catch (error) {
       console.error('Erro ao buscar localização:', error);
     }
@@ -19,14 +33,13 @@ export default function Clima() {
 
   return (
     <div className="flex h-screen">
-      {/* Barra lateral */}
       <aside className="flex flex-col bg-[#023020] w-1/4 items-center justify-end">
         <button className="h-14 w-64 mb-2 bg-slate-200 text-black rounded-2xl text-2xl font-semibold p-1 hover:bg-slate-100 hover:text-slate-500">
           <Link href="/chatgpt">CHAT</Link>
         </button>
       </aside>
 
-      {/* Conteúdo principal */}
+  
       <main className="flex flex-col items-center bg-[#011e14] flex-grow justify-end">
         <input
           type="text"
@@ -43,13 +56,13 @@ export default function Clima() {
         </button>
       </main>
 
-      {/* Resultados da pesquisa */}
+
       {location && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold">Informações sobre a cidade:</h2>
           <p className="text-lg">Nome: {location.name}</p>
-          {/* Certifique-se de que 'location.details' seja uma propriedade válida do objeto */}
-          <p className="text-lg">Outros detalhes: {location.details}</p>
+          <p className="text-lg">Temperatura: {location.temperature}°C</p>
+          <p className="text-lg">Tempo: {location.weather}</p>
         </div>
       )}
     </div>

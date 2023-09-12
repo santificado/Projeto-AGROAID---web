@@ -34,26 +34,23 @@ export default function Home(){
     )
   }
 
-  const login = () =>{
-
-    const obj ={
-      email: email,
+  const login = async () => {
+    const obj = {
+      email: email, 
       senha: password
+    };
+  
+    console.log('oi');
+  
+    try {
+      const resp = await Login(obj);
+      console.log(resp.data);
+      router.push('/chatgpt');
+    } catch (err) {
+      console.error(err);
     }
-
-    console.log('oi')
-
-    
-
-    Login(obj).then(
-      (resp)=>{
-        console.log(resp.data);
-        router.push('/chatgpt');
-      },
-      (err)=>{console.log(err)}
-    )
-    
-  }
+  };
+  
 
   const handleEmail = (event) =>{
     let code = event.target.value
