@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import logo from '@/assets/logo.png';
-import axios from 'axios';
 import Link from 'next/link';
 
 export default function Chat() {
@@ -17,30 +16,45 @@ export default function Chat() {
     if (inputText.trim() === '') return;
 
     // Adicione a mensagem do usuário à conversa
-    setConversation([...conversation, { text: inputText, user: true }]);
+    const userMessage = { text: inputText, user: true };
+    setConversation([...conversation, userMessage]);
     setInputText('');
 
     try {
-      const response = await axios.post('http://localhost:8080/chatgpt', { text: inputText });
-      const data = response.data;
+      const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer SUA_CHAVE_API',
+        },
+        body: JSON.stringify({
+          prompt: inputText,
+          max_tokens: 150,
+          temperature: 0.8
+        }),
+      });
 
-      // Adicione a resposta do chatbot à conversa
-      setConversation([...conversation, { text: data.answer, user: false }]);
+      if (!response.ok) {
+        throw new Error('Erro ao enviar mensagem');
+      }
+
+      const data = await response.json();
+
+      const botResponse = { text: data.choices[0].text, user: false };
+      setConversation([...conversation, botResponse]);
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
     }
   }
-
   return (
     <div className="flex h-screen">
-      {/* Barra lateral */}
+      
       <aside className="flex flex-col bg-[#023020] w-1/4 items-center justify-end">
         <button className="h-14 w-64 mb-2 bg-slate-200 text-black rounded-2xl text-2xl font-semibold p-1 hover:bg-slate-100 hover:text-slate-500">
           <Link href="/clima">CLIMA</Link>
         </button>
       </aside>
 
-      {/* Conteúdo principal */}
       <main className="flex flex-col items-center bg-[#011e14] flex-grow">
         <div className="w-5/6 flex justify-between items-center">
           <p className="text-2xl text-[#00ff6c] font-semibold">CHAT</p>

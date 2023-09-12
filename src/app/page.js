@@ -1,13 +1,9 @@
 'use client'
-import { Input } from "postcss";
 import Logo from './../assets/logo.png'
-import {icon} from './favicon.ico'
-import naruto from "./../assets/naruto.jpg"
 import Image from "next/image";
 import './style.css'
 import { useState } from "react";
 import { Login, Register } from "./service/service";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 
