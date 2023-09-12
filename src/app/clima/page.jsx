@@ -6,7 +6,7 @@ import axios from 'axios'; // Certifique-se de instalar a dependência axios
 export default function Clima() {
   const [location, setLocation] = useState(null);
   const [cityQuery, setCityQuery] = useState('');
-  const apiKey = '5c6de4b36195d7d1b3a2c86353e907f5'; 
+  const apiKey = ''; 
 
   const handleCitySearch = async () => {
     try {
